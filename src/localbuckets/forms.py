@@ -2,7 +2,9 @@ from pydantic import BaseModel
 
 
 class BucketBase(BaseModel):
-    id: int
+    folder_name: str
+    title: str = ''
+    subtitle: str = ''
 
 
 class BucketCreate(BucketBase):
@@ -10,4 +12,7 @@ class BucketCreate(BucketBase):
 
 
 class Bucket(BucketBase):
-    pass
+    id: int
+
+    class Config:
+        orm_moe = True

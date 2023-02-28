@@ -17,3 +17,9 @@ def get_all_buckets(
         .offset(skip)
         .limit(limit)
     ).all()
+
+
+def create_bucket(db: Session, bucket: forms.BucketCreate) -> model.Bucket:
+    bucket_path = Path(bucket.folder_name)
+    if not bucket.title:
+        bucket
