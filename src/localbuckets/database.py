@@ -92,8 +92,9 @@ def md5_hex(data: str | bytes) -> str:
 def set_db_engine(project_path: str | Path):
     project_path = Path(project_path)
     db_file = project_path.joinpath(app_db_filename)
+    db_url = f'sqlite:///{db_file}'
     the_project['path'] = project_path
-    the_project['engine'] = create_engine(str(db_file), connect_args={'check_same_thread': False})
+    the_project['engine'] = create_engine(db_url, connect_args={'check_same_thread': False})
     the_project['session'] = sessionmaker(autoflush=False, bind=the_project['engine'])
     Base.metadata.create_all(bind=the_project['engine'])
 
