@@ -2,12 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import model, forms, crud, database
-from .database import init_the_project, the_project, get_db, app_cfg
+from .database import init_the_project, the_project, get_db, app_cfg, app_config_path
 
 
 init_the_project()
 
 router = APIRouter(prefix='/api', tags=['api'])
+
+
+@router.get('/all-projects', response_model=list[forms.Project])
+def get_all_projects():
+    projects = app_cfg['projects'].values()
+    return list(projects)
 
 
 @router.post('/add-project', response_model=forms.Project)
@@ -16,6 +22,7 @@ def add_project(project: forms.ProjectCreate):
     if err:
         raise HTTPException(status_code=400, detail=err)
     return project
+
 
 @router.get('/all-buckets', response_model=list[forms.Bucket])
 def get_all_buckets(

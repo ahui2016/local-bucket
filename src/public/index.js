@@ -15,23 +15,21 @@ $("#root").append(
 init();
 
 function init() {
-  initLabels();
-  MoneyList.init();
-  NotesList.init();
+  initProjects();
 }
 
-function initLabels() {
+function initProjects() {
   axiosGet({
-    url: "/api/all-labels",
+    url: "/api/all-projects",
     alert: AppAlert,
     onSuccess: (resp) => {
-      const labels = resp.data;
-      if (labels && labels.length > 0) {
-        MJBS.appendToList(LabelList, labels.map(LabelItem));
+      const projects = resp.data;
+      if (projects && projects.length > 0) {
+        console.log(projects);
+        // MJBS.appendToList(LabelList, labels.map(LabelItem));
       } else {
-        AppAlert.insert("info", "無預設標籤, 請新增標籤.");
-        FormArea_CreateLabel.show();
-        MJBS.focus(LabelNameInput);
+        AppAlert.insert("info", "尚未註冊項目, 請添加項目.");
+        // MJBS.focus(LabelNameInput);
       }
     },
   });

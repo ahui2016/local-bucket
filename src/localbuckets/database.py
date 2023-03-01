@@ -2,13 +2,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import TypedDict
+from typing import TypedDict, TypeAlias
 
 from platformdirs import user_data_path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-from .model import ErrMsg
 
 hash_md5 = hashlib.md5()
 
@@ -17,6 +16,10 @@ app_db_filename = 'localbuckets.db'
 app_data_path: Path = user_data_path(app_name, 'github-ahui2016')
 app_data_path.mkdir(parents=True, exist_ok=True)
 app_config_path = app_data_path.joinpath(app_name + '.json')
+
+
+ErrMsg: TypeAlias = str | None
+"""空字符串或 None 表示無錯誤, 有內容表示有錯誤."""
 
 
 class Base(DeclarativeBase):
