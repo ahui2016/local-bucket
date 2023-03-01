@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import TypedDict
 
@@ -7,6 +8,7 @@ from platformdirs import user_data_path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
+from .model import ErrMsg
 
 hash_md5 = hashlib.md5()
 
@@ -47,13 +49,18 @@ app_default_cfg = AppConfig(
 )
 app_cfg: AppConfig = app_default_cfg
 
+
+def write_app_cfg(cfg: AppConfig):
+    app_config_path.write_text(json.dumps(cfg))
+
+
 if app_config_path.exists():
     app_cfg = json.loads(app_config_path.read_text())
 else:
-    app_config_path.write_text(json.dumps(app_default_cfg))
-
+    write_app_cfg(app_default_cfg)
 
 the_project = dict(
+    # path: Path,
     # engine,
     # session
 )
@@ -80,7 +87,9 @@ def md5_hex(data: str | bytes) -> str:
 
 
 def set_db_engine(project_path: str | Path):
-    db_file = Path(project_path).joinpath(app_db_filename)
+    project_path = Path(project_path)
+    db_file = project_path.joinpath(app_db_filename)
+    the_project['path'] = project_path
     the_project['engine'] = create_engine(str(db_file), connect_args={'check_same_thread': False})
     the_project['session'] = sessionmaker(autoflush=False, bind=the_project['engine'])
     Base.metadata.create_all(bind=the_project['engine'])
@@ -103,3 +112,30 @@ def init_the_project():
     if project_id:
         project = app_cfg['projects'][project_id]
         set_db_engine(project['path'])
+
+
+def add_project(path: str | Path) -> (Project, ErrMsg):
+    path = Path(path).resolve()
+    path_str = str(path)
+    project_id = md5_hex(path_str)
+    if project_id in app_cfg['projects']:
+        return {}, f'項目已存在, 請勿重複添加: {path_str}'
+
+    if not path.exists():
+        return {}, f'PathNotExist(文件夾不存在): {path_str}'
+
+    if dir_not_empty(path):
+        db_file = path.joinpath(app_db_filename)
+        if not db_file.exists():
+            return {}, f'不是空文件夾, 也沒有 {app_db_filename}: {path}'
+
+    set_db_engine(path)
+    project = new_project(path)
+    app_cfg['projects'][project_id] = project
+    app_cfg['default_project'] = project_id
+    write_app_cfg(app_cfg)
+    return project, None
+
+
+def dir_not_empty(path):
+    return True if os.listdir(path) else False

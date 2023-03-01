@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import model, forms
+from .database import the_project
 
 
 def get_all_buckets(
@@ -19,7 +20,10 @@ def get_all_buckets(
     ).all()
 
 
+'''
 def create_bucket(db: Session, bucket: forms.BucketCreate) -> model.Bucket:
-    bucket_path = Path(bucket.folder_name)
+    bucket_path = the_project['path'].joinpath(bucket.folder_name)
     if not bucket.title:
-        bucket
+        bucket.title = bucket.folder_name
+    return bucket
+'''

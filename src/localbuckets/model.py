@@ -1,6 +1,12 @@
+from typing import TypeAlias
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
+
+
+ErrMsg: TypeAlias = str | None
+"""空字符串或 None 表示無錯誤, 有內容表示有錯誤."""
 
 
 class Bucket(Base):
