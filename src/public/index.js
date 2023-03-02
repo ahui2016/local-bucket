@@ -7,7 +7,7 @@ const pageTitleArea = m("div")
 const AppAlert = MJBS.createAlert();
 
 const FormAlert_AddProject = MJBS.createAlert();
-const ProjetPathInput = MJBS.createInput("text", "required");
+const ProjectPathInput = MJBS.createInput("text", "required");
 const AddProjectBtn = MJBS.createButton("Add", "primary", 'submit');
 
 const Form_AddProject = cc('form', {
@@ -20,15 +20,15 @@ const Form_AddProject = cc('form', {
         m('span').addClass('input-group-text').text('Project Path'),
 
         // text input
-        m(ProjetPathInput).addClass('form-control'),
+        m(ProjectPathInput).addClass('form-control'),
 
         // submit button
         m(AddProjectBtn).on('click', event => {
           event.preventDefault();
-          const path = MJBS.valOf(ProjetPathInput, 'trim');
+          const path = MJBS.valOf(ProjectPathInput, 'trim');
           if (!path) {
             FormAlert_AddProject.insert("warning", "必須填寫項目地址");
-            MJBS.focus(ProjetPathInput);
+            MJBS.focus(ProjectPathInput);
             return;
           }
           axiosPost({
@@ -39,9 +39,9 @@ const Form_AddProject = cc('form', {
               const project = resp.data;
               FormAlert_AddProject.insert(
                 'success',
-                `成功添加項目 id: ${project.id}, title: ${project.title}`
+                `成功添加項目 id: ${project.id}, path: ${project.path}`
               );
-              ProjetPathInput.elem().val('');
+              ProjectPathInput.elem().val('');
             }
           });
         })
@@ -79,7 +79,7 @@ function initProjects() {
         // MJBS.appendToList(LabelList, labels.map(LabelItem));
       } else {
         AppAlert.insert("info", "尚未註冊項目, 請添加項目.");
-        // MJBS.focus(LabelNameInput);
+        MJBS.focus(ProjectPathInput);
       }
     },
   });

@@ -20,7 +20,7 @@ def get_all_projects():
 
 @router.post('/add-project', response_model=forms.Project)
 def add_project(project: forms.ProjectCreate):
-    project, err = database.add_project(project.path)
+    project, err = database.add_project(**project.dict())
     if err:
         raise HTTPException(status_code=400, detail=err)
     return project
