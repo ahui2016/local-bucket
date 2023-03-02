@@ -78,3 +78,13 @@ function cc(name, options) {
   }
   return component;
 }
+
+/**
+ * 使用 mjElement.append() 时，如果直接 append 字符串可以注入 html,
+ * 建议用 span() 来包裹字符串。
+ * @param {string} text
+ * @returns {mjElement}
+ */
+span = function (text) {
+  return m("span").text(text);
+};

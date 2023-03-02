@@ -3,8 +3,10 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import model, api
-from .database import app_config_path
+from .database import init_the_project, app_config_path
 
+
+init_the_project()
 
 app = FastAPI()
 app.include_router(api.router)

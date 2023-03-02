@@ -35,6 +35,9 @@ class Project(TypedDict):
     title: str
     subtitle: str
 
+    # 是否當前正在使用的項目
+    in_use: bool
+
 
 def new_project(path: str | Path, title: str = '', subtitle: str = '') -> dict:
     path = Path(path).resolve()

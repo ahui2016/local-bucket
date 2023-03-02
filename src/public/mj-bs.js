@@ -32,16 +32,6 @@ MJBS.enable = function (obj) {
 };
 
 /**
- * 使用 mjElement.append() 时，如果直接 append 字符串可以注入 html,
- * 建议用 span() 来包裹字符串。
- * @param {string} text
- * @returns {mjElement}
- */
-MJBS.span = function (text) {
-  return m("span").text(text);
-};
-
-/**
  * @param {mjComponent} list
  * @param {mjComponent[]} items
  */
@@ -115,7 +105,7 @@ MJBS.createAlert = function () {
     const elem = m("div")
       .addClass(`alert alert-${msgType} alert-dismissible fade show my-1`)
       .attr({ role: "alert" })
-      .append(MJBS.span(timeMsg), dismissBtn);
+      .append(span(timeMsg), dismissBtn);
 
     alert.insertElem(elem);
   };
@@ -185,7 +175,7 @@ function createToast() {
     self.elem().removeClass().addClass(`toast text-bg-${color}`);
     if (title) self.find("strong").text(title);
     self.find("small").text(dayjs().format("HH:mm:ss"));
-    if (typeof body == "string") body = MJBS.span(body);
+    if (typeof body == "string") body = span(body);
     self.find(".toast-body").html("").append(body);
     const toast = new bootstrap.Toast(self.elem()[0]);
     toast.show();

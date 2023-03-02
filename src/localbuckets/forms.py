@@ -13,6 +13,7 @@ class ProjectCreate(ProjectBase):
 
 class Project(ProjectBase):
     id: str
+    in_use: bool = False
 
     class Config:
         orm_mode = True
