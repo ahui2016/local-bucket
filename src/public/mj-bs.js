@@ -124,7 +124,7 @@ MJBS.createAlert = function () {
  * $('#root').append(m(IDToasts)); // 必須立即實體化.
  * const Toast = Toasts.new();
  * // Toast.setTitle(title);
- * Toast.popup(body, title?);
+ * Toast.popup(body, title?, color?);
  * ```
  */
 MJBS.createToasts = function (classes) {

@@ -28,6 +28,14 @@ def add_project(project: forms.ProjectCreate):
     return project
 
 
+@router.post('/change-project', response_model=forms.Project)
+def change_project(project: forms.ProjectChange):
+    project, err = database.change_project(project.id)
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+    return project
+
+
 @router.get('/all-buckets', response_model=list[forms.Bucket])
 def get_all_buckets(
         skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

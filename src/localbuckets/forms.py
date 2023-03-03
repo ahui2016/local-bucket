@@ -19,6 +19,13 @@ class Project(ProjectBase):
         orm_mode = True
 
 
+class ProjectChange(BaseModel):
+    id: str
+
+    class Config:
+        orm_mode = True
+
+
 class BucketBase(BaseModel):
     folder_name: str
     title: str = ''

@@ -24,8 +24,8 @@ class Base(DeclarativeBase):
 
 
 class Project(TypedDict):
-    # 項目文件夾路徑轉 md5
-    id: int
+    # 項目文件夾路徑轉 checksum
+    id: str
 
     # 項目文件夾路徑 (絕對路徑)
     # 文件夾名只能使用 0-9, a-z, A-Z, _(下劃線), -(連字號), .(點)
@@ -49,7 +49,8 @@ def new_project(path: str | Path, title: str = '', subtitle: str = '') -> dict:
         id=adler32(path_str),
         path=path_str,
         title=title,
-        subtitle=subtitle
+        subtitle=subtitle,
+        in_use=False
     )
 
 
@@ -134,11 +135,22 @@ def add_project(path: str, title: str = '', subtitle: str = '') -> (Project, Err
     return project, None
 
 
+def change_project(project_id: str) -> (Project, ErrMsg):
+    if project_id not in app_cfg['projects']:
+        return {}, f'ProjectNotFound: id({project_id})'
+
+    project = app_cfg['projects'][project_id]
+    app_cfg['default_project'] = project_id
+    write_app_cfg(app_cfg)
+    return project, None
+
+
 def dir_not_empty(path):
     return True if os.listdir(path) else False
 
 
-def adler32(text: str) -> int:
+def adler32(text: str) -> str:
     """An Adler-32 checksum is almost as reliable as a CRC32
     but can be computed much more quickly."""
-    return zlib.adler32(text.encode())
+    checksum = zlib.adler32(text.encode())
+    return str(checksum)
