@@ -42,3 +42,11 @@ def get_all_buckets(
     if not app_cfg['default_project']:
         raise HTTPException(status_code=404, detail='尚未添加項目')
     return crud.get_all_buckets(db, skip=skip, limit=limit)
+
+
+@router.post('/create-bucket', response_model=forms.Bucket)
+def create_bucket(bucket: forms.BucketCreate, db: Session = Depends(get_db)):
+    db_bucket, err = crud.create_bucket(db, bucket)
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+    return db_bucket

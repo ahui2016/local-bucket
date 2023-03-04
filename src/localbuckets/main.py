@@ -6,13 +6,12 @@ from . import model, api
 from .database import init_the_project, app_config_path
 
 
+print(app_config_path)
 init_the_project()
 
 app = FastAPI()
 app.include_router(api.router)
 app.mount('/public', StaticFiles(directory='src/public'), name='public')
-
-print(app_config_path)
 
 
 @app.get('/')

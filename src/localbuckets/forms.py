@@ -30,6 +30,9 @@ class BucketBase(BaseModel):
     folder_name: str
     title: str = ''
     subtitle: str = ''
+    capacity: int = 1024
+    max_filesize: int = 1024
+    encrypted: bool
 
 
 class BucketCreate(BucketBase):
@@ -38,9 +41,6 @@ class BucketCreate(BucketBase):
 
 class Bucket(BucketBase):
     id: int
-    capacity: int
-    max_filesize: int
-    encrypted: bool
 
     class Config:
         orm_mode = True

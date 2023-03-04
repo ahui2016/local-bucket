@@ -9,17 +9,14 @@ from platformdirs import user_data_path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-
 app_name = 'local-buckets'
 app_db_filename = 'localbuckets.db'
 app_data_path: Path = user_data_path(app_name, 'github-ahui2016')
 app_data_path.mkdir(parents=True, exist_ok=True)
 app_config_path = app_data_path.joinpath(app_name + '.json')
 
-
 Filename_Forbid_Pattern = re.compile(r"[^._0-9a-zA-Z\-]")
 """文件名只能使用 0-9, a-z, A-Z, _(下劃線), -(連字號), .(點)"""
-
 
 ErrMsg: TypeAlias = str | None
 """空字符串或 None 表示無錯誤, 有內容表示有錯誤."""
@@ -50,7 +47,7 @@ def new_project(
 ) -> (dict, ErrMsg):
     path = Path(path).resolve()
     if err := check_filename(path.name):
-        return {}, err
+        return None, err
 
     if not title:
         title = path.name
@@ -62,7 +59,7 @@ def new_project(
         title=title,
         subtitle=subtitle,
         in_use=False
-    )
+    ), None
 
 
 # projects: {id: project}
