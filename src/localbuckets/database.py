@@ -1,3 +1,4 @@
+import re
 import zlib
 import json
 import os
@@ -14,6 +15,11 @@ app_db_filename = 'localbuckets.db'
 app_data_path: Path = user_data_path(app_name, 'github-ahui2016')
 app_data_path.mkdir(parents=True, exist_ok=True)
 app_config_path = app_data_path.joinpath(app_name + '.json')
+
+
+Filename_Forbid_Pattern = re.compile(r"[^._0-9a-zA-Z\-]")
+"""文件名只能使用 0-9, a-z, A-Z, _(下劃線), -(連字號), .(點)"""
+
 
 ErrMsg: TypeAlias = str | None
 """空字符串或 None 表示無錯誤, 有內容表示有錯誤."""
@@ -39,10 +45,15 @@ class Project(TypedDict):
     in_use: bool
 
 
-def new_project(path: str | Path, title: str = '', subtitle: str = '') -> dict:
+def new_project(
+        path: str | Path, title: str = '', subtitle: str = ''
+) -> (dict, ErrMsg):
     path = Path(path).resolve()
+    if err := check_filename(path.name):
+        return {}, err
+
     if not title:
-        title = Path(path).name
+        title = path.name
 
     path_str = str(path)
     return Project(
@@ -115,18 +126,20 @@ def init_the_project():
 
 
 def add_project(path: str, title: str = '', subtitle: str = '') -> (Project, ErrMsg):
-    project = new_project(path, title, subtitle)
+    project, err = new_project(path, title, subtitle)
+    if err:
+        return None, err
     if project['id'] in app_cfg['projects']:
-        return {}, f'項目已存在, 請勿重複添加: {path}'
+        return None, f'項目已存在, 請勿重複添加: {path}'
 
     project_path = Path(path)
     if not project_path.exists():
-        return {}, f'PathNotExist(文件夾不存在): {path}'
+        return None, f'PathNotExist(文件夾不存在): {path}'
 
     if dir_not_empty(project_path):
         db_file = project_path.joinpath(app_db_filename)
         if not db_file.exists():
-            return {}, f'不是空文件夾, 也沒有 {app_db_filename}: {path}'
+            return None, f'不是空文件夾, 也沒有 {app_db_filename}: {path}'
 
     set_db_engine(project_path)
     app_cfg['projects'][project['id']] = project
@@ -137,7 +150,7 @@ def add_project(path: str, title: str = '', subtitle: str = '') -> (Project, Err
 
 def change_project(project_id: str) -> (Project, ErrMsg):
     if project_id not in app_cfg['projects']:
-        return {}, f'ProjectNotFound: id({project_id})'
+        return None, f'ProjectNotFound: id({project_id})'
 
     project = app_cfg['projects'][project_id]
     app_cfg['default_project'] = project_id
@@ -154,3 +167,14 @@ def adler32(text: str) -> str:
     but can be computed much more quickly."""
     checksum = zlib.adler32(text.encode())
     return str(checksum)
+
+
+def check_filename(name: str) -> ErrMsg:
+    """
+    :return: 发生错误时返回 err_msg: str, 没有错误则返回 False 或空字符串。
+    """
+    if Filename_Forbid_Pattern.search(name) is None:
+        return None
+
+    return "只能使用 0-9, a-z, A-Z, _(下劃線), -(連字號), .(點)" \
+           "\n注意: 不可使用空格, 请用下劃線或連字號代替空格。"

@@ -16,3 +16,12 @@ class Bucket(Base):
     # 倉庫標題和副標題, 可使用任何語言任意字符
     title: Mapped[str] = '',
     subtitle: Mapped[str] = ''
+
+    # 容積 (最多可容納多少個文件)
+    capacity: Mapped[int] = 1024
+
+    # 文件體積上限 (單位: MB)
+    max_filesize: Mapped[int] = 1024
+
+    # 是否加密 (在創建時決定, 不可更改) (密碼在 app_config 中統一設定)
+    encrypted: Mapped[bool]

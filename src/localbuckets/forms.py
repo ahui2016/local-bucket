@@ -38,6 +38,9 @@ class BucketCreate(BucketBase):
 
 class Bucket(BucketBase):
     id: int
+    capacity: int
+    max_filesize: int
+    encrypted: bool
 
     class Config:
         orm_mode = True
